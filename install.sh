@@ -31,10 +31,15 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-sudo rm /etc/nginx/sites-enabled/default
+# Copy all the installation content to the specified destination
+cp -r "${DIR}/" "/etc/elab_birdhouse/"
+# cp "${DIR}/uwsgi.ini" "/etc/nginx/sites-available/uwsgi.ini"
+
+sudo rm -r /etc/nginx/sites-enabled/
+sudo rm -r /etc/nginx/sites-available/
 
 # Copy flaskmain_proxy
-cp "${DIR}/flasktest_proxy" "/etc/nginx/sites-available/flasktest_proxy"
+cp "${DIR}/flaskmain_proxy" "/etc/nginx/sites-available/flaskmain_proxy"
 
 # FILE="${DIR}/settings.py"
 # if [ -f "$FILE" ]; then
@@ -43,14 +48,14 @@ cp "${DIR}/flasktest_proxy" "/etc/nginx/sites-available/flasktest_proxy"
 #     cp "${DIR}/settings_default.py" "${DIR}/settings.py"
 #     echo "You must edit the settings in: ${FILE}."
 # fi
-sudo ln -s /etc/nginx/sites-available/flasktest_proxy /etc/nginx/sites-enabled
+sudo ln -s /etc/nginx/sites-available/flaskmain_proxy /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 
 # Copy uwsgi.service, add service and start it
 TEMPLATE="${DIR}/uwsgi.service"
 UWSGI_PATH=$(which uwsgi)
 
-sed -e "s|\${path}|${UWSGI_PATH}|" "${TEMPLATE}" > "/etc/systemd/system/sunset.service"
+sed -e "s|\${path}|${UWSGI_PATH}|" "${TEMPLATE}" > "/etc/systemd/system/uwsgi.service"
 sudo systemctl daemon-reload
 sudo systemctl start uwsgi.service
 # sudo systemctl status uwsgi.service

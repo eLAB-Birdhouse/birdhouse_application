@@ -28,13 +28,13 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     """Serve the index page."""
-    return render_template('./frontend/index.htm')
+    return render_template('./index.htm')
 
 
 @app.route("/settings")
 def settings():
     """Serve the setting page."""
-    return render_template('./frontend/settings.htm')
+    return render_template('./settings.htm')
 
 
 def gen(camera):
