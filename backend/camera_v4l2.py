@@ -2,7 +2,7 @@ import io
 import select
 
 import v4l2capture
-from base_camera import BaseCamera
+from backend.base_camera import BaseCamera
 from PIL import Image
 
 
