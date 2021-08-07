@@ -13,7 +13,7 @@ os.environ['CAMERA'] = 'pi'
 if os.environ.get('CAMERA'):
     Camera = import_module('backend.camera_' + os.environ['CAMERA']).Camera
 else:
-    from backend.camera import Camera
+    from backend.camera import Camera  # type: ignore
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///records.db'
