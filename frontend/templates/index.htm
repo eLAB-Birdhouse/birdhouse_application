@@ -1,0 +1,34 @@
+{% extends 'base.htm' %}
+
+{% block head %}
+<title>Nichoir connecté</title>
+{% endblock head %}
+
+{% block body %}
+<div class="topnav">
+    <a class="active" href="/">Accueil</a>
+    <!-- <a href="/settings">Paramètres</a> -->
+</div>
+<div class="liveview">
+    <h1>Vidéo en direct</h1>
+    <img src="/video" class="responsive" />
+    <div>
+        <button class="button" onclick="document.getElementById('record').className = request('/button_recording')" id="record">Enregistrer</button>
+        <button class="button" onclick="request('/button_capture');" id="capture">Capturer</button>
+    </div>
+    <!-- <form action="/forward/" method="post">
+        <button name="forwardBtn" class="button" type="submit">Forward</button>
+    </form> -->
+
+    <!-- <form action="/" method="post"> -->
+    <!-- <button class="button" name="record" value="upvote">Enregistrer</button> -->
+    <!-- <input class="button" type="submit" name="upvote" value="Upvote" /> -->
+    <!-- <input class="button" type="submit" value="Enregistrer" name="record"/>
+        <input class="button" type="submit" value="Capturer" name="capture" />
+    </form> -->
+</div>
+<div class="recordings">
+    <h2>Vidéos et photos enregistrées</h2>
+    <p>Pas de vidéo ou de photos enregistrée détectée</p>
+</div>
+{% endblock body %}

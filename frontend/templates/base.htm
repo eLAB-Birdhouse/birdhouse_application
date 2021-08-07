@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1.0, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/LOGO_electroLAB.svg')}}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mystyle.css')}}">
+    <script>
+        function request(url) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", url, false);
+            xhttp.send();
+            return xhttp.responseText
+        }
+    </script>
+    {% block head %}{% endblock head %}
+</head>
+
+<body class="body">
+    {% block body %}{% endblock body %}
+</body>
+
+</html>
