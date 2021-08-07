@@ -4,7 +4,7 @@
 import os
 from importlib import import_module
 
-from flask import Flask, render_template, Response, url_for
+from flask import Flask, render_template, Response  # , url_for
 # from flask_sqlalchemy import SQLAlchemy
 #
 # import camera driver
@@ -19,17 +19,20 @@ app = Flask(__name__)
 # database = SQLAlchemy(app)
 
 # class Todo(db.Model):
-#     content = database.Columon(database.Str)
+#     content = database.Column(database.Str)
+
 
 @app.route("/")
 def index():
     """Serve the index page."""
     return render_template('./frontend/index.htm')
 
+
 @app.route("/settings")
 def settings():
     """Serve the setting page."""
     return render_template('./frontend/settings.htm')
+
 
 def gen(camera):
     """Video streaming generator function."""
@@ -38,6 +41,7 @@ def gen(camera):
         yield (
             b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame + b'\r\n'
         )
+
 
 @app.route('/video')
 def video_feed():
@@ -54,7 +58,10 @@ def video_feed():
 #     return render_template('index.htm', forward_message=forward_message)
 # fill {{forward_message}} fields
 
+
 recording_state = False
+
+
 @app.route('/button_recording')
 def button_recording():
     global recording_state
@@ -69,11 +76,13 @@ def button_recording():
         print('Stop recording')
         return 'button'
 
+
 @app.route('/button_capture')
 def button_capture():
     # Capture a picture
     print('Capture image')
     return ''
 
+
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True)
