@@ -1,12 +1,12 @@
 import os
 import time
 
-from . import base_camera
+from backend.base_camera import BaseCamera
 
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 
-class Camera(base_camera.BaseCamera):
+class Camera(BaseCamera):
     """An emulated camera implementation that streams a repeated sequence of
     files 1.jpg, 2.jpg and 3.jpg at a rate of one frame per second."""
     images = [
