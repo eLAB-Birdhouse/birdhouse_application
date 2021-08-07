@@ -32,8 +32,9 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 sudo rm /etc/nginx/sites-enabled/default
+
 # Copy flaskmain_proxy
-# /etc/nginx/sites-available/flasktest_proxy
+cp "${DIR}/flasktest_proxy" "/etc/nginx/sites-available/flasktest_proxy"
 
 # FILE="${DIR}/settings.py"
 # if [ -f "$FILE" ]; then
@@ -45,19 +46,16 @@ sudo rm /etc/nginx/sites-enabled/default
 sudo ln -s /etc/nginx/sites-available/flasktest_proxy /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 
-# Copy uwsgi.service
+# Copy uwsgi.service, add service and start it
+TEMPLATE="${DIR}/uwsgi.service"
+UWSGI_PATH=$(which uwsgi)
+
+sed -e "s|\${path}|${UWSGI_PATH}|" "${TEMPLATE}" > "/etc/systemd/system/sunset.service"
 sudo systemctl daemon-reload
 sudo systemctl start uwsgi.service
 # sudo systemctl status uwsgi.service
 sudo systemctl enable uwsgi.service
-sudo reboot
-
-# Add service and start it
-# TEMPLATE="${DIR}/sunset.service"
-# ROUTINE_PATH="${DIR}/routine.py"
-
-# systemctl stop sunset
-# sed -e "s|\${path}|${ROUTINE_PATH}|" "${TEMPLATE}" > "/lib/systemd/system/sunset.service"
+# sudo reboot
 # systemctl daemon-reload
 # systemctl start sunset
 #echo "$DIR"
