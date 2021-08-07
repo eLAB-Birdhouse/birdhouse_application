@@ -31,6 +31,10 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
+sudo rm /etc/nginx/sites-enabled/default
+# Copy flaskmain_proxy
+# /etc/nginx/sites-available/flasktest_proxy
+
 # FILE="${DIR}/settings.py"
 # if [ -f "$FILE" ]; then
 #     echo "$FILE exists (you can edit the settings later, using this file)"
@@ -38,13 +42,22 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 #     cp "${DIR}/settings_default.py" "${DIR}/settings.py"
 #     echo "You must edit the settings in: ${FILE}."
 # fi
+sudo ln -s /etc/nginx/sites-available/flasktest_proxy /etc/nginx/sites-enabled
+sudo systemctl restart nginx
+
+# Copy uwsgi.service
+sudo systemctl daemon-reload
+sudo systemctl start uwsgi.service
+# sudo systemctl status uwsgi.service
+sudo systemctl enable uwsgi.service
+sudo reboot
 
 # Add service and start it
-TEMPLATE="${DIR}/sunset.service"
-ROUTINE_PATH="${DIR}/routine.py"
+# TEMPLATE="${DIR}/sunset.service"
+# ROUTINE_PATH="${DIR}/routine.py"
 
-systemctl stop sunset
-sed -e "s|\${path}|${ROUTINE_PATH}|" "${TEMPLATE}" > "/lib/systemd/system/sunset.service"
-systemctl daemon-reload
-systemctl start sunset
+# systemctl stop sunset
+# sed -e "s|\${path}|${ROUTINE_PATH}|" "${TEMPLATE}" > "/lib/systemd/system/sunset.service"
+# systemctl daemon-reload
+# systemctl start sunset
 #echo "$DIR"
