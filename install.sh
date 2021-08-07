@@ -21,7 +21,7 @@ sudo mkdir /etc/elab_birdhouse/
 sudo chown www-data /etc/elab_birdhouse/
 # cd /etc/elab_birdhouse/
 
-# Get installation path
+# Get source path
 SOURCE="${BASH_SOURCE:-0}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
@@ -47,3 +47,4 @@ systemctl stop sunset
 sed -e "s|\${path}|${ROUTINE_PATH}|" "${TEMPLATE}" > "/lib/systemd/system/sunset.service"
 systemctl daemon-reload
 systemctl start sunset
+#echo "$DIR"

@@ -4,7 +4,8 @@
 import os
 from importlib import import_module
 
-from flask import Flask, render_template, Response  # , url_for
+from flask import Flask, Response, render_template  # , url_for
+
 # from flask_sqlalchemy import SQLAlchemy
 #
 # import camera driver
