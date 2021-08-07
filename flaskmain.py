@@ -11,7 +11,9 @@ from flask import Flask, Response, render_template  # , url_for
 # import camera driver
 os.environ['CAMERA'] = 'pi'
 if os.environ.get('CAMERA'):
-    Camera = import_module('backend.camera_' + os.environ['CAMERA']).Camera
+    Camera = import_module(
+        'backend.camera_' + os.environ['CAMERA']
+    ).Camera  # type: ignore
 else:
     from backend.camera import Camera  # type: ignore
 
