@@ -10,16 +10,19 @@ fi
 
 # Update and upgrade packages
 sudo apt update
-sudo apt upgrade -y
+sudo apt full-upgrade -y
 
 # Install needed packages and python3 modules
+sudo apt remove --purge nginx nginx-common nginx-full -y
 sudo apt install nginx python3 python3-pip -y
 sudo python3 -m pip install flask uwsgi -U
 
 # Create installation directory
 sudo mkdir /etc/elab_birdhouse/
+
+# Makes www-data own the directory and add it to the video group
 sudo chown www-data /etc/elab_birdhouse/
-# cd /etc/elab_birdhouse/
+sudo usermod -aG video www-data
 
 # Get source path
 SOURCE="${BASH_SOURCE:-0}"
@@ -51,6 +54,15 @@ cp "${DIR}/flaskmain_proxy" "/etc/nginx/sites-available/flaskmain_proxy"
 sudo ln -s /etc/nginx/sites-available/flaskmain_proxy /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 
+# Enable camera after next reboot
+sudo raspi-config nonint do_camera 0
+
+# Activate SSH, change hostname and password
+sudo raspi-config nonint do_ssh 0
+sudo raspi-config nonint do_hostname elab-birdhouse
+sudo raspi-config nonint do_change_pass birdslab
+echo -e "birdslab\nbirdslab" | sudo passwd pi
+
 # Copy uwsgi.service, add service and start it
 TEMPLATE="${DIR}/uwsgi.service"
 UWSGI_PATH=$(which uwsgi)
@@ -60,7 +72,7 @@ sudo systemctl daemon-reload
 sudo systemctl start uwsgi.service
 # sudo systemctl status uwsgi.service
 sudo systemctl enable uwsgi.service
-# sudo reboot
+sudo reboot
 # systemctl daemon-reload
 # systemctl start sunset
 #echo "$DIR"
