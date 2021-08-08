@@ -16,6 +16,11 @@ sudo apt full-upgrade -y
 sudo apt remove --purge nginx nginx-common nginx-full -y
 sudo apt install nginx python3 python3-pip -y
 sudo python3 -m pip install flask picamera uwsgi -U
+sudo mkdir /var/www/.local
+sudo mkdir /var/www/.cache
+sudo chown www-data.www-data /var/www/.local
+sudo chown www-data.www-data /var/www/.cache
+sudo -H -u www-data python3 -m pip install flask picamera uwsgi -U
 
 # Create installation directory
 sudo mkdir /etc/elab_birdhouse/
