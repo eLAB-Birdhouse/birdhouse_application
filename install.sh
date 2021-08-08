@@ -15,7 +15,7 @@ sudo apt full-upgrade -y
 # Install needed packages and python3 modules
 sudo apt remove --purge nginx nginx-common nginx-full -y
 sudo apt install nginx python3 python3-pip -y
-sudo python3 -m pip install flask uwsgi -U
+sudo python3 -m pip install flask picamera uwsgi -U
 
 # Create installation directory
 sudo mkdir /etc/elab_birdhouse/
@@ -35,7 +35,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # Copy all the installation content to the specified destination
-cp -r "${DIR}/" "/etc/elab_birdhouse/"
+cp -a "${DIR}/." "/etc/elab_birdhouse/"
 # cp "${DIR}/uwsgi.ini" "/etc/nginx/sites-available/uwsgi.ini"
 
 sudo rm -r /etc/nginx/sites-enabled/
@@ -60,7 +60,6 @@ sudo raspi-config nonint do_camera 0
 # Activate SSH, change hostname and password
 sudo raspi-config nonint do_ssh 0
 sudo raspi-config nonint do_hostname elab-birdhouse
-sudo raspi-config nonint do_change_pass birdslab
 echo -e "birdslab\nbirdslab" | sudo passwd pi
 
 # Copy uwsgi.service, add service and start it
@@ -72,6 +71,7 @@ sudo systemctl daemon-reload
 sudo systemctl start uwsgi.service
 # sudo systemctl status uwsgi.service
 sudo systemctl enable uwsgi.service
+sudo apt autoremove -y
 sudo reboot
 # systemctl daemon-reload
 # systemctl start sunset
