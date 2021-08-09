@@ -2,19 +2,27 @@
 # cp -r flask-video-streaming/*.py .
 # For nginx: sudo usermod -aG video pi
 import os
+import subprocess
 from importlib import import_module
 
 from flask import Flask, Response, render_template  # , url_for
 
 # from flask_sqlalchemy import SQLAlchemy
 #
-# import camera driver
-os.environ['CAMERA'] = 'pi'
+# Import camera driver
+detect_rpi_camera = subprocess.run(
+    ['vcgencmd', 'get_camera'],
+    stdout=subprocess.PIPE,
+).stdout.decode('utf-8')
+
+if detect_rpi_camera == 'supported=1 detected=1\n':
+    os.environ['CAMERA'] = 'pi'
+
 if os.environ.get('CAMERA'):
     Camera = import_module(
         'backend.camera_' + os.environ['CAMERA']
     ).Camera  # type: ignore
-else:
+else:  # Use a fake camera
     from backend.camera import Camera  # type: ignore
 
 app = Flask(__name__)
