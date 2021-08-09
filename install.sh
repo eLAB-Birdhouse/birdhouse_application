@@ -30,10 +30,10 @@ sudo mkdir -p /var/log/uwsgi
 sudo chown -R www-data:www-data /var/log/uwsgi
 
 # Create installation directory
+sudo rm -r /etc/elab_birdhouse/
 sudo mkdir /etc/elab_birdhouse/
 
 # Makes www-data own the directory and add it to the video group
-sudo rm -r /etc/elab_birdhouse/
 sudo chown www-data /etc/elab_birdhouse/
 sudo usermod -aG video www-data
 
