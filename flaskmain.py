@@ -10,10 +10,14 @@ from flask import Flask, Response, render_template  # , url_for
 # from flask_sqlalchemy import SQLAlchemy
 #
 # Import camera driver
-detect_rpi_camera = subprocess.run(
-    ['vcgencmd', 'get_camera'],
-    stdout=subprocess.PIPE,
-).stdout.decode('utf-8')
+try:
+    detect_rpi_camera = subprocess.run(
+        ['vcgencmd', 'get_camera'],
+        stdout=subprocess.PIPE,
+    ).stdout.decode('utf-8')
+
+except FileNotFoundError:
+    detect_rpi_camera = 'No vcgencmd'
 
 if detect_rpi_camera == 'supported=1 detected=1\n':
     os.environ['CAMERA'] = 'pi'
