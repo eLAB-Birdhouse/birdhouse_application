@@ -9,7 +9,7 @@ Application for the birdhouse camera | application pour la caméra du nichoir.
 
 - Install it on the SD card using [Balena Etcher](https://www.balena.io/etcher/);
 
-- Copy the content of the folder `boot` (from https://github.com/eLAB-Birdhouse/birdhouse_application) to the `boot` partition of the SD card;
+- Copy the content of the folder `boot` (from <https://github.com/eLAB-Birdhouse/birdhouse_application>) to the `boot` partition of the SD card;
 
 - Then change the SSID and password in `wpa_supplicant.conf`;
 
@@ -26,7 +26,7 @@ Now the password is  `birdslab` and the hostname is `elab-birdhouse`. In other w
 
 The application is located within the `/etc/elab_birdhouse/`, and in order to restart the service you can use `sudo systemctl restart uwsgi`  or `sudo systemctl stop uwsgi` and `sudo systemctl start uwsgi`. Eventually you can check the service status with `systemctl status uwsgi`.
 
-If all is working as expected you will be able to open http://elab-birdhouse.local/ in your browser.
+If all is working as expected you will be able to open <http://elab-birdhouse.local/> in your browser.
 
 
 
