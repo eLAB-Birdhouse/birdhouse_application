@@ -33,8 +33,8 @@ jobs:
       - name: Compress the release image with PiShrink
         run: |
           mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ matrix.base_image  }}.img
-          wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-          sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ matrix.base_image  }}.img
+          # wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+          # sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ matrix.base_image  }}.img
   
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
