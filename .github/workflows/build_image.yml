@@ -24,7 +24,7 @@ jobs:
           copy_repository_path: /home/pi/birdhouse_application
           optimize_image: yes
           commands: |
-            sudo cd /home/pi/birdhouse_application
+            cd /home/pi/birdhouse_application
             sudo chmod +x ./home/pi/birdhouse_application/install.sh
             sudo ./home/pi/birdhouse_application/install.sh
             sudo rm -r /home/pi/birdhouse_application/
