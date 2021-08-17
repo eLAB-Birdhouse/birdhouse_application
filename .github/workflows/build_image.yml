@@ -39,11 +39,14 @@ jobs:
           # sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ matrix.base_image  }}.img
           # Above is not working for the moment so, just compress the image
           tar -cJf elab_birdhouse-${{ matrix.base_image }}.img.xz elab_birdhouse-${{ matrix.base_image  }}.img
+          sudo apt-get update
+          sudo apt-get install detox
+          detox -r -v .
   
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
         with:
           name: release_images
-          path: elab_birdhouse-${{ matrix.base_image }}.img.xz
+          path: elab_birdhouse-*.img.xz
           if-no-files-found: error
           retention-days: 1
