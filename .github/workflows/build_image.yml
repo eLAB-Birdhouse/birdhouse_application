@@ -2,7 +2,7 @@ name: 🏗️  Build
 on: [push, pull_request]
 
 jobs:
-  test_suite:
+  create_image:
     name: Install app and create a Raspbian Image
     runs-on: ubuntu-latest
     strategy:
@@ -13,6 +13,28 @@ jobs:
     steps:
       - name: Checkout birdhouse_application
         uses: actions/checkout@v2
+
+      - name: Define the image name
+        id: image_and_branch_name
+        run: |
+          if [[ "${{ matrix.base_image }}" =~ "raspios" ]]; then
+            os_suffix="-raspios"
+          elif [[ "${{ matrix.base_image }}" =~ "dietpi" ]]; then
+            os_suffix="-dietpi"
+          else
+            os_suffix=""
+          fi
+          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
+            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/tags\//}
+            echo ::set-output name=RELEASE_NAME::${GITHUB_REF/refs\/tags\//}
+            echo ::set-output name=IMAGE_NAME_SUFFIX::${GITHUB_REF/refs\/tags\//}${os_suffix}
+          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
+            echo ::set-output name=LOCAL_BRANCH::releng
+            echo ::set-output name=RELEASE_NAME::releng
+            echo ::set-output name=IMAGE_NAME_SUFFIX::releng${os_suffix}
+          else
+            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/heads\//}
+          fi
 
       - name: Run install in chroot environment
         uses: pguyot/arm-runner-action@v1
@@ -30,14 +52,29 @@ jobs:
             sudo /home/pi/birdhouse_application/install.sh
             sudo rm -r /home/pi/birdhouse_application/
 
-  create_image:
+      - name: Compress the release image with PiShrink
+        run: |
+          mv ${{ steps.arm_runner_install.outputs.image }} pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          wget https://raw.githubusercontent.com/Drewsif/PiShrink/fa3c7a27406e7c0a1c7b8688e330f14a766be1ba/pishrink.sh
+          sudo bash pishrink.sh -s -Z -a -p pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+
+      - name: Upload the image artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release_images
+          path: pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
+          if-no-files-found: error
+          retention-days: 1
+
+
+  create_image_not_generated:
     name: Build image
     runs-on: ubuntu-latest
-    needs: test_suite
+    needs: create_image
     strategy:
       fail-fast: false
       matrix:
-        base_image: ['raspios_lite:2021-05-07', 'dietpi:rpi_armv6_buster']
+        base_image: ['raspios_lite:2021-05-07']
     if: github.ref == 'refs/heads/releng' || startsWith(github.ref, 'refs/tags/')
 
     steps:
@@ -84,15 +121,15 @@ jobs:
 
       - name: Compress the release image with PiShrink
         run: |
-          mv ${{ steps.arm_runner_install.outputs.image }} pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
           wget https://raw.githubusercontent.com/Drewsif/PiShrink/fa3c7a27406e7c0a1c7b8688e330f14a766be1ba/pishrink.sh
-          sudo bash pishrink.sh -s -Z -a -p pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
 
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
         with:
           name: release_images
-          path: pynab-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
+          path: elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
           if-no-files-found: error
           retention-days: 1
 
