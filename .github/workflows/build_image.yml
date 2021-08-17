@@ -14,31 +14,9 @@ jobs:
       - name: Checkout birdhouse_application
         uses: actions/checkout@v2
 
-      - name: Define the image name
-        id: image_and_branch_name
-        run: |
-          if [[ "${{ matrix.base_image }}" =~ "raspios" ]]; then
-            os_suffix="-raspios"
-          elif [[ "${{ matrix.base_image }}" =~ "dietpi" ]]; then
-            os_suffix="-dietpi"
-          else
-            os_suffix=""
-          fi
-          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
-            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/tags\//}
-            echo ::set-output name=RELEASE_NAME::${GITHUB_REF/refs\/tags\//}
-            echo ::set-output name=IMAGE_NAME_SUFFIX::${GITHUB_REF/refs\/tags\//}${os_suffix}
-          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
-            echo ::set-output name=LOCAL_BRANCH::releng
-            echo ::set-output name=RELEASE_NAME::releng
-            echo ::set-output name=IMAGE_NAME_SUFFIX::releng${os_suffix}
-          else
-            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/heads\//}
-          fi
-
       - name: Run install in chroot environment
         uses: pguyot/arm-runner-action@v1
-        id: arm_runner_tests
+        id: arm_runner_install
         with:
           image_additional_mb: 250
           base_image: ${{ matrix.base_image }}
@@ -54,126 +32,14 @@ jobs:
 
       - name: Compress the release image with PiShrink
         run: |
-          mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ matrix.base_image  }}.img
           wget https://raw.githubusercontent.com/Drewsif/PiShrink/fa3c7a27406e7c0a1c7b8688e330f14a766be1ba/pishrink.sh
-          sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ matrix.base_image  }}.img
 
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
         with:
           name: release_images
-          path: elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
+          path: elab_birdhouse-${{ matrix.base_image }}.img.xz
           if-no-files-found: error
           retention-days: 1
-
-
-  create_image_not_generated:
-    name: Build image
-    runs-on: ubuntu-latest
-    needs: create_image
-    strategy:
-      fail-fast: false
-      matrix:
-        base_image: ['raspios_lite:2021-05-07']
-    if: github.ref == 'refs/heads/releng' || startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Checkout pynab
-        uses: actions/checkout@v2
-
-      - name: Define the image name
-        id: image_and_branch_name
-        run: |
-          if [[ "${{ matrix.base_image }}" =~ "raspios" ]]; then
-            os_suffix="-raspios"
-          elif [[ "${{ matrix.base_image }}" =~ "dietpi" ]]; then
-            os_suffix="-dietpi"
-          else
-            os_suffix=""
-          fi
-          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
-            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/tags\//}
-            echo ::set-output name=RELEASE_NAME::${GITHUB_REF/refs\/tags\//}
-            echo ::set-output name=IMAGE_NAME_SUFFIX::${GITHUB_REF/refs\/tags\//}${os_suffix}
-          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
-            echo ::set-output name=LOCAL_BRANCH::releng
-            echo ::set-output name=RELEASE_NAME::releng
-            echo ::set-output name=IMAGE_NAME_SUFFIX::releng${os_suffix}
-          else
-            echo ::set-output name=LOCAL_BRANCH::${GITHUB_REF/refs\/heads\//}
-          fi
-
-      - name: Create a release image in chroot environment
-        uses: pguyot/arm-runner-action@v1
-        id: arm_runner_install
-        with:
-          image_additional_mb: 4096
-          base_image: ${{ matrix.base_image }}
-          cpu: 'arm1176'
-          optimize_image: yes
-          commands: |
-            echo GITHUB_BRANCH=${{ steps.image_and_branch_name.outputs.LOCAL_BRANCH }}
-            echo GITHUB_REPOSITORY=${{ github.repository }}
-            sudo GITHUB_BRANCH=${{ steps.image_and_branch_name.outputs.LOCAL_BRANCH }} GITHUB_REPOSITORY=${{ github.repository }} /bin/bash setup ci-chroot
-            cd / ; sudo rm -rf /pynab
-            sudo apt-get autoremove --purge -y
-            sudo apt-get clean
-
-      - name: Compress the release image with PiShrink
-        run: |
-          mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
-          wget https://raw.githubusercontent.com/Drewsif/PiShrink/fa3c7a27406e7c0a1c7b8688e330f14a766be1ba/pishrink.sh
-          sudo bash pishrink.sh -s -Z -a -p elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
-
-      - name: Upload the image artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: release_images
-          path: elab_birdhouse-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
-          if-no-files-found: error
-          retention-days: 1
-
-  create_release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: create_image_not_generated
-    if: github.ref == 'refs/heads/releng' || startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Define the release name
-        id: release_name
-        run: |
-          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
-             echo ::set-output name=RELEASE_NAME::${GITHUB_REF/refs\/tags\//}
-          elif [ ${GITHUB_REF/refs\/heads\//} = "releng" ]; then
-             echo ::set-output name=RELEASE_NAME::releng
-           else
-             echo ::set-output name=RELEASE_NAME::${GITHUB_REF/refs\/heads\//}
-          fi
-
-      - name: Download the image artifact(s)
-        uses: actions/download-artifact@v2
-        with:
-          name: release_images
-
-      - name: Create release with releng image
-        if: github.ref == 'refs/heads/releng'
-        uses: "marvinpinto/action-automatic-releases@v1.1.2"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          draft: true
-          title: "Prerelease"
-          files: elab_birdhouse-${{ steps.release_name.outputs.RELEASE_NAME }}*.img.xz
-
-      - name: Create release with release image
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: "marvinpinto/action-automatic-releases@v1.1.2"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.release_name.outputs.RELEASE_NAME }}
-          prerelease: false
-          draft: true
-          title: ${{ steps.release_name.outputs.RELEASE_NAME }}
-          files: elab_birdhouse-${{ steps.release_name.outputs.RELEASE_NAME }}*.img.xz
