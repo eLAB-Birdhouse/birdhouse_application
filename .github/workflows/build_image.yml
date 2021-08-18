@@ -40,7 +40,7 @@ jobs:
           # Above is not working for the moment so, just compress the image
           sudo apt-get update
           sudo apt-get install -y detox tar
-          detox -r -v .
+          detox -r -v /home/pi/birdhouse_application/
           image_name=$(ls *.img)
           tar -cJvf ${image_name}.xz ${image_name}
           rm ${image_name}
