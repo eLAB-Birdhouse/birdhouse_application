@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image: ['raspios_lite:2021-05-07']
+        base_image: ['raspios_lite:2021-05-07', 'raspios_lite:2021-03-04']
 
     steps:
       - name: Checkout birdhouse_application
