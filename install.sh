@@ -26,8 +26,8 @@ sudo -H -u www-data python3 -m pip install flask picamera uwsgi -U
 
 # Add log folder
 sudo rm -r /var/log/uwsgi > /dev/null 2>&1
-sudo mkdir -p /var/log/uwsgi
-sudo chown -R www-data:www-data /var/log/uwsgi
+sudo mkdir /var/log/uwsgi
+sudo chown www-data:www-data /var/log/uwsgi
 
 # Create installation directory
 sudo rm -r /etc/elab_birdhouse/ > /dev/null 2>&1
