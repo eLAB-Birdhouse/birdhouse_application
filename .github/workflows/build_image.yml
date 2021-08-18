@@ -18,7 +18,7 @@ jobs:
         uses: pguyot/arm-runner-action@v1
         id: arm_runner_install
         with:
-          image_additional_mb: 250
+          image_additional_mb: 4096
           base_image: ${{ matrix.base_image }}
           cpu: 'arm1176'
           copy_repository_path: /home/pi/birdhouse_application
