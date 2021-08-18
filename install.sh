@@ -9,15 +9,15 @@ if [ "$EUID" != 0 ]; then
 fi
 
 # Update and upgrade packages
-sudo apt update
-sudo apt full-upgrade -y
+sudo apt-get update
+sudo apt-get full-upgrade -y
 
 # Install needed packages and python3 modules
-sudo apt remove --purge nginx nginx-common nginx-full -y
-sudo apt install nginx python3 python3-pip -y
+sudo apt-get remove --purge nginx nginx-common nginx-full -y
+sudo apt-get install nginx nginx-common nginx-full python3 python3-pip -y
 sudo python3 -m pip install flask picamera uwsgi -U
-sudo rm -r /var/www/.local
-sudo rm -r /var/www/.cache
+sudo rm -r /var/www/.local > /dev/null 2>&1
+sudo rm -r /var/www/.cache > /dev/null 2>&1
 sudo mkdir /var/www/.local
 sudo mkdir /var/www/.cache
 sudo chown www-data.www-data /var/www/.local
@@ -25,12 +25,12 @@ sudo chown www-data.www-data /var/www/.cache
 sudo -H -u www-data python3 -m pip install flask picamera uwsgi -U
 
 # Add log folder
-sudo rm -r /var/log/uwsgi
+sudo rm -r /var/log/uwsgi > /dev/null 2>&1
 sudo mkdir -p /var/log/uwsgi
 sudo chown -R www-data:www-data /var/log/uwsgi
 
 # Create installation directory
-sudo rm -r /etc/elab_birdhouse/
+sudo rm -r /etc/elab_birdhouse/ > /dev/null 2>&1
 sudo mkdir /etc/elab_birdhouse/
 
 # Makes www-data own the directory and add it to the video group
@@ -51,21 +51,13 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 cp -a "${DIR}/." "/etc/elab_birdhouse/"
 # cp "${DIR}/uwsgi.ini" "/etc/nginx/sites-available/uwsgi.ini"
 
-sudo rm -r /etc/nginx/sites-enabled/
-sudo rm -r /etc/nginx/sites-available/
+sudo rm -r /etc/nginx/sites-enabled/ > /dev/null 2>&1
+sudo rm -r /etc/nginx/sites-available/ > /dev/null 2>&1
 
 # Copy flaskmain_proxy
 sudo mkdir /etc/nginx/sites-enabled/
 sudo mkdir /etc/nginx/sites-available/
 sudo cp "${DIR}/flaskmain_proxy" "/etc/nginx/sites-available/flaskmain_proxy"
-
-# FILE="${DIR}/settings.py"
-# if [ -f "$FILE" ]; then
-#     echo "$FILE exists (you can edit the settings later, using this file)"
-# else 
-#     cp "${DIR}/settings_default.py" "${DIR}/settings.py"
-#     echo "You must edit the settings in: ${FILE}."
-# fi
 sudo ln -s /etc/nginx/sites-available/flaskmain_proxy /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 
@@ -86,8 +78,5 @@ sudo systemctl daemon-reload
 sudo systemctl start uwsgi.service
 # sudo systemctl status uwsgi.service
 sudo systemctl enable uwsgi.service
-sudo apt autoremove -y
+sudo apt-get autoremove -y
 sudo reboot
-# systemctl daemon-reload
-# systemctl start sunset
-#echo "$DIR"

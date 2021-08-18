@@ -40,10 +40,6 @@ fi
 
 grep "gpu_mem" < /boot/config.txt
 
-# echo "Setting hostname."
-# sed -i "s/raspberrypi/pi-zero-w/" /etc/hostname
-# sed -i "s/raspberrypi/pi-zero-w/" /etc/hosts
-
 echo "Setting timezone."
 echo "Europe/Brussels" > /etc/timezone
 ln -fs /usr/share/zoneinfo/Europe/Brussels /etc/localtime
