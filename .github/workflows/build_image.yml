@@ -41,12 +41,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install detox
           detox -r -v .
-          tar -cJf elab_birdhouse-*.img.xz elab_birdhouse-*.img
+          tar -cJvf elab_birdhouse-*.img.xz elab_birdhouse-*.img
   
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
         with:
           name: release_images
-          path: elab_birdhouse-*.img.xz
+          path: ./*.img.xz
           if-no-files-found: error
           retention-days: 1
