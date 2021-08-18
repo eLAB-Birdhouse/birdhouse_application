@@ -36,7 +36,8 @@ then
 else
     echo "gpu_mem=${GPU_MEM}" >> /boot/config.txt
 fi
-cat /boot/config.txt | grep "gpu_mem"
+
+grep "gpu_mem" < /boot/config.txt | ..
 
 echo "Setting hostname."
 sed -i "s/raspberrypi/pi-zero-w/" /etc/hostname
