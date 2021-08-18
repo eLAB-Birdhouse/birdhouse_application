@@ -41,7 +41,7 @@ jobs:
           wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
           sudo bash pishrink.sh -s -Z -a -p ${image_name}
           # tar -cJvf ${image_name}.xz ${image_name}
-          rm ${image_name}
+          # rm ${image_name}
   
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
