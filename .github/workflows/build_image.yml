@@ -78,7 +78,7 @@ jobs:
             # Activate SSH, change hostname and password
             sudo raspi-config nonint do_ssh 0
             sudo raspi-config nonint do_hostname elab-birdhouse
-            sudo -c 'echo -e "birdslab\nbirdslab" | sudo passwd pi'
+            'echo -e "birdslab\nbirdslab" | sudo passwd pi'
 
             # Copy uwsgi.service, add service and start it
             TEMPLATE="${DIR}/uwsgi.service"
