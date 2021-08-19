@@ -41,14 +41,15 @@ sudo chown www-data /etc/elab_birdhouse/
 sudo usermod -aG video www-data
 
 # Get source path
-SOURCE="${BASH_SOURCE:-0}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+# SOURCE="${BASH_SOURCE:-0}"
+# while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+#   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+#   SOURCE="$(readlink "$SOURCE")"
+#   # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+#   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+# done
+# DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+DIR="/home/pi/birdhouse_application"
 
 # Copy all the installation content to the specified destination
 cp -a "${DIR}/." "/etc/elab_birdhouse/"
