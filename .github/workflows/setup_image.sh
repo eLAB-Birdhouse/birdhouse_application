@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# Check for sudo permissions
+if [ "$EUID" != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
+
 # Update and upgrade packages
 sudo apt-get update
 sudo apt-get full-upgrade -y
@@ -33,6 +40,16 @@ sudo mkdir /etc/elab_birdhouse/
 sudo chown www-data /etc/elab_birdhouse/
 sudo usermod -aG video www-data
 
+# Get source path
+SOURCE="${BASH_SOURCE:-0}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
 # Copy all the installation content to the specified destination
 cp -a "${DIR}/." "/etc/elab_birdhouse/"
 
@@ -50,7 +67,7 @@ sudo systemctl restart nginx
 sudo raspi-config nonint do_camera 0
 
 # Activate SSH, change hostname and password
-sudo raspi-config nonint do_ssh 0
+# sudo raspi-config nonint do_ssh 0
 sudo raspi-config nonint do_hostname elab-birdhouse
 echo -e "birdslab\nbirdslab" | sudo passwd pi
 

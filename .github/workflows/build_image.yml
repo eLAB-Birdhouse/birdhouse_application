@@ -24,7 +24,7 @@ jobs:
           copy_repository_path: /home/pi/birdhouse_application
           optimize_image: yes
           commands: |
-            DIR="$( pwd )"
+            # DIR="$( pwd )"
             pwd
             ls -a /home/pi/birdhouse_application
             # Installation process
