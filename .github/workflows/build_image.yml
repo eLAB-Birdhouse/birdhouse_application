@@ -32,15 +32,14 @@ jobs:
             # sudo chmod +x /home/pi/birdhouse_application/install.sh
             # sudo /home/pi/birdhouse_application/install.sh
 
-      - name: Compress the release image with(out) PiShrink (use tar for the moment).
+      - name: Compress the release image with PiShrink
         run: |
           mv ${{ steps.arm_runner_install.outputs.image }} elab_birdhouse-${{ matrix.base_image  }}.img
-          # Above is not working for the moment so, just compress the image
           sudo apt-get update && sudo apt-get install -y detox tar
           detox -r -v ./*
           image_name=$(ls *.img)
           wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
-          sudo bash pishrink.sh -s -Z -a -p ${image_name}
+          sudo bash pishrink.sh -s -Z -a ${image_name}
   
       - name: Upload the image artifact
         uses: actions/upload-artifact@v2
