@@ -30,7 +30,7 @@ sudo chown -R www-data:www-data /var/log/uwsgi
 sudo rm -rf /var/log/nginx > /dev/null 2>&1
 sudo mkdir /var/log/nginx
 sudo touch /var/log/nginx/error.log
-sudo chown -R www-data:www-data /var/log/nginx           
+sudo chown -R www-data:www-data /var/log/nginx
 
 # Create installation directory
 sudo rm -rf /etc/elab_birdhouse/ > /dev/null 2>&1
