@@ -180,14 +180,14 @@ sudo reboot
 #    fi
 #    sudo htpasswd -b -B /usr/local/.htpasswd $user $webpasswd
 #    sudo sed -i "s/AllowOverride\ .*/AllowOverride All/g" $aconf
-#    if [ ! -e /var/www$rpicamdir/.htaccess ]; then
-#       sudo bash -c "cat > /var/www$rpicamdir/.htaccess" << EOF
+#    if [ ! -e /var/www/html/.htaccess ]; then
+#       sudo bash -c "cat > /var/www/html/.htaccess" << EOF
 # AuthName "RPi Cam Web Interface Restricted Area"
 # AuthType Basic
 # AuthUserFile /usr/local/.htpasswd
 # Require valid-user
 # EOF
-#       sudo chown -R www-data:www-data /var/www$rpicamdir/.htaccess
+#       sudo chown -R www-data:www-data /var/www/html/.htaccess
 #    fi
 # fi
 # sudo mv $aconf /$aconf
@@ -308,9 +308,9 @@ chown www-data:www-data /dev/shm/mjpeg
 chmod 777 /dev/shm/mjpeg
 sleep 4;su -c 'raspimjpeg > /dev/null 2>&1 &' www-data
 if [ -e /etc/debian_version ]; then
-  sleep 4;su -c 'php /var/www$rpicamdir/schedule.php > /dev/null 2>&1 &' www-data
+  sleep 4;su -c 'php /var/www/html/schedule.php > /dev/null 2>&1 &' www-data
 else
-  sleep 4;su -s '/bin/bash' -c 'php /var/www$rpicamdir/schedule.php > /dev/null 2>&1 &' www-data
+  sleep 4;su -s '/bin/bash' -c 'php /var/www/html/schedule.php > /dev/null 2>&1 &' www-data
 fi
 #END RASPIMJPEG SECTION
 
@@ -331,7 +331,7 @@ sudo chmod 755 /etc/rc.local
 #Main install)
 fn_stop
 
-sudo mkdir -p /var/www$rpicamdir/media
+sudo mkdir -p /var/www/html/media
 #move old material if changing from a different install folder
 # if [ ! "$rpicamdir" == "$rpicamdirold" ]; then
 #    if [ -e /var/www$rpicamdirold/index.php ]; then
@@ -339,9 +339,9 @@ sudo mkdir -p /var/www$rpicamdir/media
 #    fi
 # fi
 
-# sudo cp -r www/* /var/www$rpicamdir/
-# if [ -e /var/www$rpicamdir/index.html ]; then
-#    sudo rm /var/www$rpicamdir/index.html
+# sudo cp -r www/* /var/www/html/
+# if [ -e /var/www/html/index.html ]; then
+#    sudo rm /var/www/html/index.html
 # fi
 
 # if [[ "$phpversion" == "7.3" ]]; then
@@ -367,42 +367,42 @@ sudo mkdir -p /var/www$rpicamdir/media
 #Make sure user www-data has bash shell
 sudo sed -i "s/^www-data:x.*/www-data:x:33:33:www-data:\/var\/www:\/bin\/bash/g" /etc/passwd
 
-if [ ! -e /var/www$rpicamdir/FIFO ]; then
-   sudo mknod /var/www$rpicamdir/FIFO p
+if [ ! -e /var/www/html/FIFO ]; then
+   sudo mknod /var/www/html/FIFO p
 fi
-sudo chmod 666 /var/www$rpicamdir/FIFO
+sudo chmod 666 /var/www/html/FIFO
 
-if [ ! -e /var/www$rpicamdir/FIFO11 ]; then
-   sudo mknod /var/www$rpicamdir/FIFO11 p
+if [ ! -e /var/www/html/FIFO11 ]; then
+   sudo mknod /var/www/html/FIFO11 p
 fi
-sudo chmod 666 /var/www$rpicamdir/FIFO11
+sudo chmod 666 /var/www/html/FIFO11
 
-if [ ! -e /var/www$rpicamdir/FIFO1 ]; then
-   sudo mknod /var/www$rpicamdir/FIFO1 p
+if [ ! -e /var/www/html/FIFO1 ]; then
+   sudo mknod /var/www/html/FIFO1 p
 fi
 
-sudo chmod 666 /var/www$rpicamdir/FIFO1
+sudo chmod 666 /var/www/html/FIFO1
 
 if [ ! -d /dev/shm/mjpeg ]; then
    mkdir /dev/shm/mjpeg
 fi
 
 if [ "$jpglink" == "yes" ]; then
-	if [ ! -e /var/www$rpicamdir/cam.jpg ]; then
-	   sudo ln -sf /dev/shm/mjpeg/cam.jpg /var/www$rpicamdir/cam.jpg
+	if [ ! -e /var/www/html/cam.jpg ]; then
+	   sudo ln -sf /dev/shm/mjpeg/cam.jpg /var/www/html/cam.jpg
 	fi
 fi
 
-if [ -e /var/www$rpicamdir/status_mjpeg.txt ]; then
-   sudo rm /var/www$rpicamdir/status_mjpeg.txt
+if [ -e /var/www/html/status_mjpeg.txt ]; then
+   sudo rm /var/www/html/status_mjpeg.txt
 fi
 if [ ! -e /dev/shm/mjpeg/status_mjpeg.txt ]; then
    echo -n 'halted' > /dev/shm/mjpeg/status_mjpeg.txt
 fi
 sudo chown www-data:www-data /dev/shm/mjpeg/status_mjpeg.txt
-sudo ln -sf /dev/shm/mjpeg/status_mjpeg.txt /var/www$rpicamdir/status_mjpeg.txt
+sudo ln -sf /dev/shm/mjpeg/status_mjpeg.txt /var/www/html/status_mjpeg.txt
 
-sudo chown -R www-data:www-data /var/www$rpicamdir
+sudo chown -R www-data:www-data /var/www/html
 sudo cp etc/sudoers.d/RPI_Cam_Web_Interface /etc/sudoers.d/
 sudo chmod 440 /etc/sudoers.d/RPI_Cam_Web_Interface
 
@@ -422,29 +422,29 @@ if [ -e /etc/raspimjpeg ]; then
 fi
 sudo cp -r etc/raspimjpeg/raspimjpeg /etc/
 sudo chmod 644 /etc/raspimjpeg
-if [ ! -e /var/www$rpicamdir/raspimjpeg ]; then
-   sudo ln -s /etc/raspimjpeg /var/www$rpicamdir/raspimjpeg
+if [ ! -e /var/www/html/raspimjpeg ]; then
+   sudo ln -s /etc/raspimjpeg /var/www/html/raspimjpeg
 fi
 
 sudo usermod -a -G video www-data
-if [ -e /var/www$rpicamdir/uconfig ]; then
-   sudo chown www-data:www-data /var/www$rpicamdir/uconfig
+if [ -e /var/www/html/uconfig ]; then
+   sudo chown www-data:www-data /var/www/html/uconfig
 fi
 
 fn_motion
 fn_autostart
 
-if [ -e /var/www$rpicamdir/uconfig ]; then
-   sudo chown www-data:www-data /var/www$rpicamdir/uconfig
+if [ -e /var/www/html/uconfig ]; then
+   sudo chown www-data:www-data /var/www/html/uconfig
 fi
 
-# if [ -e /var/www$rpicamdir/schedule.php ]; then
-#    sudo rm /var/www$rpicamdir/schedule.php
+# if [ -e /var/www/html/schedule.php ]; then
+#    sudo rm /var/www/html/schedule.php
 # fi
 
 sudo sed -e "s/www/www$rpicamdirEsc/g" www/schedule.php > www/schedule.php.1
-sudo mv www/schedule.php.1 /var/www$rpicamdir/schedule.php
-sudo chown www-data:www-data /var/www$rpicamdir/schedule.php
+sudo mv www/schedule.php.1 /var/www/html/schedule.php
+sudo chown www-data:www-data /var/www/html/schedule.php
 
 if [ $# -eq 0 ] || [ "$1" != "q" ]; then
    fn_reboot
